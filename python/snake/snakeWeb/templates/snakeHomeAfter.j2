@@ -1,0 +1,261 @@
+{% extends "base.J2" %}
+{% block content %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+    }
+    
+    h1 {
+        text-align: center;
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .form-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+    }
+    
+    #pseudoInput {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1em;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
+    
+    #pseudoInput:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 15px;
+    }
+    
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+        transform: translateY(0);
+    }
+    
+    .leaderboard {
+        margin-top: 20px;
+    }
+    
+    .leaderboard h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+    }
+    
+    .leaderboard-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .leaderboard-item {
+        background: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+    
+    .leaderboard-item:hover {
+        transform: translateX(5px);
+        background: #e9ecef;
+    }
+    
+    .leaderboard-item.top-1 {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        font-weight: bold;
+    }
+    
+    .leaderboard-item.top-2 {
+        background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+    }
+    
+    .leaderboard-item.top-3 {
+        background: linear-gradient(135deg, #cd7f32 0%, #daa06d 100%);
+    }
+    
+    .player-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .rank {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #667eea;
+        min-width: 30px;
+    }
+    
+    .player-name {
+        font-size: 1.1em;
+        color: #333;
+    }
+    
+    .player-score {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #764ba2;
+    }
+    
+    .empty-leaderboard {
+        text-align: center;
+        color: #999;
+        padding: 30px;
+        font-style: italic;
+    }
+    
+    .loading {
+        text-align: center;
+        color: #667eea;
+        padding: 20px;
+    }
+</style>
+
+<div class="container">
+    <h1>🐍 Snake Game</h1>
+    <p class="subtitle">Prêt à battre le record ?</p>
+    
+    <div class="form-section">
+        <label for="pseudoInput">Pseudo :</label>
+        <form id="pseudoForm">
+            <input type="text" id="pseudoInput" placeholder="Entrez votre pseudo" maxlength="20" required>
+            <button type="submit">🎮 Jouer</button>
+        </form>
+    </div>
+    
+    <div class="leaderboard">
+        <h2>🏆 Leaderboard</h2>
+        <div id="leaderboardContent" class="loading">Chargement des scores...</div>
+    </div>
+</div>
+
+<script>
+    // Charger le leaderboard au démarrage
+    loadLeaderboard();
+    
+    // Recharger toutes les 5 secondes
+    setInterval(loadLeaderboard, 5000);
+    
+    function loadLeaderboard() {
+        fetch('/scores')
+            .then(response => response.json())
+            .then(data => {
+                displayLeaderboard(data);
+            })
+            .catch(error => {
+                document.getElementById('leaderboardContent').innerHTML = 
+                    '<p class="empty-leaderboard">Erreur de chargement des scores</p>';
+            });
+    }
+    
+    function displayLeaderboard(scores) {
+        const container = document.getElementById('leaderboardContent');
+        
+        if (!scores || scores.length === 0 || (scores.length === 1 && scores[0].length === 0)) {
+            container.innerHTML = '<p class="empty-leaderboard">Aucun score enregistré. Sois le premier !</p>';
+            return;
+        }
+        
+        // Trier par score décroissant
+        scores.sort((a, b) => b.score - a.score);
+        
+        // Prendre les 10 meilleurs
+        const top10 = scores.slice(0, 10);
+        
+        let html = '<ul class="leaderboard-list">';
+        top10.forEach((player, index) => {
+            const rank = index + 1;
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+            const topClass = rank <= 3 ? `top-${rank}` : '';
+            
+            html += `
+                <li class="leaderboard-item ${topClass}">
+                    <div class="player-info">
+                        <span class="rank">${medal || rank + '.'}</span>
+                        <span class="player-name">${player.name}</span>
+                    </div>
+                    <span class="player-score">${player.score} pts</span>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        
+        container.innerHTML = html;
+    }
+    
+    // Gestion du formulaire
+    document.getElementById("pseudoForm").addEventListener("submit", function(event){
+        event.preventDefault();
+        let pseudo = document.getElementById("pseudoInput").value.trim();
+        
+        if (pseudo === "" || pseudo.toLowerCase() === "serveur") {
+            alert("⚠️ Veuillez choisir un autre pseudo !");
+            return;
+        }
+        
+        // Rediriger vers la page du jeu avec le pseudo en paramètre GET
+        window.location.href = "/snake/?pseudo=" + encodeURIComponent(pseudo);
+    });
+</script>
+
+{% endblock %}
