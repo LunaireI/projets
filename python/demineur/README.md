@@ -1,21 +1,30 @@
 # Démineur
 
-Démineur 10×10 avec 10 mines, affiché grâce à la bibliothèque `metagrid` (bibliothèque fournie en cours, non incluse ici).
+Démineur sur une grille de 10 × 10 contenant 10 mines.
 
 ## Lancer
+
 ```bash
 cd python/demineur
 python main.py
 ```
 
+Le jeu utilise la bibliothèque `metagrid` pour l'affichage de la grille.
+
 ## Commandes
-Clic gauche : révéler une case · Clic droit : poser/retirer un drapeau.
 
-## Fonctionnement
-- Placement aléatoire des mines, calcul du nombre de voisins miné pour chaque case.
-- Une case à 0 voisin révèle récursivement ses voisines.
-- Défaite : toutes les mines sont révélées. Victoire : toutes les cases sans mine sont révélées.
+| Action | Effet |
+|---|---|
+| Clic gauche | Révéler une case |
+| Clic droit | Poser ou retirer un drapeau (`F`) |
 
-## Points d'attention
-- Le message « WIN » s'affiche aussi en cas de défaite (condition `est_gagne() or game_over`).
-- La première case cliquée peut être une mine.
+## Règles
+
+- Un chiffre indique combien de mines se trouvent dans les 8 cases voisines.
+- Une case sans mine voisine révèle automatiquement ses voisines.
+- Cliquer sur une mine termine la partie et dévoile toutes les mines.
+- Vous gagnez en révélant toutes les cases qui ne contiennent pas de mine.
+
+## Réglages
+
+Dans `main.py` : `HAUTEUR`, `LARGEUR` (taille de la grille) et `NB_MINES`.

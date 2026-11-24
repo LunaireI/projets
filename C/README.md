@@ -2,6 +2,6 @@
 
 | Dossier | Description |
 |---|---|
-| [`pacman/`](pacman/) | Pac-Man jouable dans le terminal |
+| [`pacman/`](pacman/) | Pac-Man dans le terminal |
 
-Compilation générale : `gcc -Wall -Wextra -o main main.c` (Linux / macOS, le code utilise `termios`).
+Les projets se compilent avec `gcc` sous Linux ou macOS.

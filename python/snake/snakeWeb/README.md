@@ -1,27 +1,30 @@
-# snakeWeb — serveur web des scores
+# snakeWeb — serveur de scores
 
-Application Flask (`appli.py`) qui sert une page d'accueil et gère `scores.json`.
+Petite application web Flask pour saisir un pseudo, consulter le tableau des scores et enregistrer de nouveaux scores du Snake.
 
-## Lancer
+## Lancer le serveur
+
 ```bash
 pip install flask
 cd python/snake/snakeWeb
-python appli.py        # http://localhost:5500
+cp ../scores.json .      # le serveur lit scores.json dans le dossier courant
+python appli.py
 ```
-Les fichiers `scores.json` et `current_player.json` sont lus/écrits dans le dossier courant : lancer depuis un dossier contenant `scores.json` (copier celui de `snake/`).
 
-## Routes
-| Route | Rôle |
+Le site est alors disponible sur <http://localhost:5500>.
+
+## Pages et routes
+
+| Route | Description |
 |---|---|
-| `/` | page d'accueil (`snakeHome.j2.html`) |
-| `/snake/?pseudo=X` | page du joueur (mémorise le pseudo dans `current_player.json`) |
-| `/scores` | liste des scores en JSON |
-| `/scores/download_scores` | téléchargement de `scores.json` |
-| `/snake/add_score?pseudo=X&score=N&timer=T` | ajoute ou met à jour un score |
-| `/snake/clear_scores` | vide tous les scores |
+| `/` | Page d'accueil (saisie du pseudo) |
+| `/snake/?pseudo=Nom` | Page du joueur ; mémorise le pseudo dans `current_player.json` |
+| `/scores` | Tous les scores au format JSON |
+| `/scores/download_scores` | Téléchargement de `scores.json` |
+| `/snake/add_score?pseudo=Nom&score=10&timer=123` | Ajoute ou met à jour le score d'un joueur |
+| `/snake/clear_scores` | Supprime tous les scores |
 
-## Points d'attention (testés avec le client de test Flask)
-- `/` renvoie une erreur 500 sous Linux : les templates font `{% extends "base.J2" %}` mais le fichier s'appelle `base.j2` (majuscule/minuscule). Ça passe sous Windows/macOS, pas sous Linux.
-- `/snake/` renvoie une erreur 500 : le template `snake.html` n'existe pas dans `templates/`.
-- Le jeu pointe vers `/snake/scores`, route qui n'existe pas (la route est `/scores`).
-- `/snake/clear_scores` efface les scores via un simple GET, sans protection.
+## Fichiers
+
+- `appli.py` : application Flask.
+- [`templates/`](templates/) : pages HTML (Jinja2).

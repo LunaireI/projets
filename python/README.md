@@ -1,19 +1,26 @@
-# Projets en Python
+# Projets Python
 
-Python 3.12+ requis (syntaxe `type X = ...` et génériques `def f[T]()`).
+Nécessite Python 3.12 ou plus récent.
 
-| Dossier | Description | Dépendances |
+| Dossier | Description | Bibliothèques |
 |---|---|---|
-| [`snake/`](snake/) | Snake (Pyxel) + serveur web Flask pour les scores | `pyxel`, `flask` |
-| [`space_invader/`](space_invader/) | Space Invaders (Pyxel) | `pyxel` |
-| [`othello/`](othello/) | Othello (logique de jeu + interface Flet en cours) | `flet` |
-| [`demineur/`](demineur/) | Démineur 10×10 | `metagrid` (bibliothèque de cours) |
-| [`structures/`](structures/) | Piles, files, listes, arbres binaires, graphes | selon le module |
+| [`snake/`](snake/) | Snake et serveur de scores | `pyxel`, `flask` |
+| [`space_invader/`](space_invader/) | Space Invaders | `pyxel` |
+| [`othello/`](othello/) | Othello | `flet` |
+| [`demineur/`](demineur/) | Démineur | `metagrid` |
+| [`structures/`](structures/) | Structures de données | `graphviz` (dessin de graphes) |
 
-## Important : lancer depuis ce dossier
-Plusieurs modules font `from structures.lineaires import ...`. Il faut donc que `python/` soit dans le chemin d'import, par exemple :
+## Installation
+
+```bash
+pip install pyxel flask flet graphviz
+```
+
+## Lancement
+
+Certains modules importent le paquet `structures`. Pour qu'il soit trouvé, lancez les commandes depuis ce dossier `python/` avec `PYTHONPATH=.` :
+
 ```bash
 cd python
 PYTHONPATH=. python snake/main.py
-python -m doctest -v structures/lineaires/pile.py
 ```

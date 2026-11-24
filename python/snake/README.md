@@ -1,21 +1,41 @@
 # Snake
 
-Snake réalisé avec [Pyxel](https://github.com/kitao/pyxel), avec un petit serveur Flask pour partager les scores.
+Le jeu classique du serpent, réalisé avec [Pyxel](https://github.com/kitao/pyxel). Un serveur web Flask (dossier `snakeWeb/`) permet de consulter et d'enregistrer les scores.
 
-## Fichiers
-- `main.py` : le jeu (flèches pour se diriger). Utilise la file de `structures/lineaires/file_de_pile.py` pour stocker le serpent.
-- `scores.json` : scores enregistrés (`name`, `score`, `timer`).
-- `snakeWeb/` : application web Flask (voir son README).
+## Contenu du dossier
 
-## Lancer
+| Élément | Rôle |
+|---|---|
+| `main.py` | Le jeu |
+| `scores.json` | Scores enregistrés (nom, score, durée) |
+| [`snakeWeb/`](snakeWeb/) | Serveur web des scores |
+
+## Lancer le jeu
+
 ```bash
-pip install pyxel flask
+pip install pyxel
 cd python
 PYTHONPATH=. python snake/main.py
 ```
 
-## Points d'attention (le jeu ne démarre pas en l'état)
-- `main.py` ligne 117 : `json.dump(call_web_service(), "scores.json", indent=4)` s'exécute à l'import. `call_web_service()` est une coroutine jamais attendue et `"scores.json"` est un nom, pas un fichier ouvert : `TypeError: Object of type coroutine is not JSON serializable`. Cette ligne doit être supprimée ou commentée.
-- `update()` appelle `game_over()` (Échap / Espace) alors que `game_over` est un booléen : `TypeError`. La fonction à appeler est `game_over_fc()`.
-- `STEP_FRAMES` n'est pas utilisé : le serpent avance à chaque frame (10 fps).
-- L'envoi du score au serveur (`requests.post`) est commenté ; l'URL est sans `http://`.
+## Commandes
+
+| Touche | Action |
+|---|---|
+| ← ↑ ↓ → | Diriger le serpent |
+| Échap / Espace | Terminer la partie |
+
+## Règles
+
+- Le serpent grandit d'une case à chaque pomme rouge mangée (+1 point).
+- La partie se termine si le serpent touche un mur ou son propre corps, puis une nouvelle partie démarre.
+- La barre du haut affiche le score en cours, le dernier score et le meilleur score.
+- Fenêtre de 200 × 200 pixels, grille de cases de 10 pixels.
+
+## Scores
+
+Le pseudo du joueur est lu dans `current_player.json` (créé par le serveur web). Les scores sont stockés dans `scores.json` au format :
+
+```json
+[{ "name": "serveur", "score": 31, "timer": 0 }]
+```
